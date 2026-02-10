@@ -20,10 +20,11 @@ import type {
   DeleteOrder400,
   DeleteOrder404,
 } from './findByTags'
-import { fetch } from './test/.kubb/fetch'
+import { fetch, mergeConfig } from './test/.kubb/fetch'
 
 export class Store {
   static #client: Client = fetch
+  static #config: Partial<RequestConfig> = {}
 
   /**
    * @description Returns a map of status codes to quantities
@@ -31,7 +32,7 @@ export class Store {
    * {@link /store/inventory}
    */
   static async getInventory(config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<GetInventoryQueryResponse, ResponseErrorConfig<Error>, unknown>({ method: 'GET', url: `/store/inventory`, ...requestConfig })
     return res.data
   }
@@ -42,7 +43,7 @@ export class Store {
    * {@link /store/order}
    */
   static async placeOrder(data?: PlaceOrderMutationRequest, config: Partial<RequestConfig<PlaceOrderMutationRequest>> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const requestData = data
     const res = await request<PlaceOrderMutationResponse, ResponseErrorConfig<PlaceOrder405>, PlaceOrderMutationRequest>({
       method: 'POST',
@@ -62,7 +63,7 @@ export class Store {
     data?: PlaceOrderPatchMutationRequest,
     config: Partial<RequestConfig<PlaceOrderPatchMutationRequest>> & { client?: Client } = {},
   ) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const requestData = data
     const res = await request<PlaceOrderPatchMutationResponse, ResponseErrorConfig<PlaceOrderPatch405>, PlaceOrderPatchMutationRequest>({
       method: 'PATCH',
@@ -79,7 +80,7 @@ export class Store {
    * {@link /store/order/:orderId}
    */
   static async getOrderById(orderId: GetOrderByIdPathParams['orderId'], config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<GetOrderByIdQueryResponse, ResponseErrorConfig<GetOrderById400 | GetOrderById404>, unknown>({
       method: 'GET',
       url: `/store/order/${orderId}`,
@@ -94,7 +95,7 @@ export class Store {
    * {@link /store/order/:orderId}
    */
   static async deleteOrder(orderId: DeleteOrderPathParams['orderId'], config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<DeleteOrderMutationResponse, ResponseErrorConfig<DeleteOrder400 | DeleteOrder404>, unknown>({
       method: 'DELETE',
       url: `/store/order/${orderId}`,

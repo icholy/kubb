@@ -24,10 +24,11 @@ import type {
   DeleteUser400,
   DeleteUser404,
 } from './findByTags'
-import { fetch } from './test/.kubb/fetch'
+import { fetch, mergeConfig } from './test/.kubb/fetch'
 
 export class User {
   static #client: Client = fetch
+  static #config: Partial<RequestConfig> = {}
 
   /**
    * @description This can only be done by the logged in user.
@@ -35,7 +36,7 @@ export class User {
    * {@link /user}
    */
   static async createUser(data?: CreateUserMutationRequest, config: Partial<RequestConfig<CreateUserMutationRequest>> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const requestData = data
     const res = await request<CreateUserMutationResponse, ResponseErrorConfig<Error>, CreateUserMutationRequest>({
       method: 'POST',
@@ -55,7 +56,7 @@ export class User {
     data?: CreateUsersWithListInputMutationRequest,
     config: Partial<RequestConfig<CreateUsersWithListInputMutationRequest>> & { client?: Client } = {},
   ) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const requestData = data
     const res = await request<CreateUsersWithListInputMutationResponse, ResponseErrorConfig<Error>, CreateUsersWithListInputMutationRequest>({
       method: 'POST',
@@ -71,7 +72,7 @@ export class User {
    * {@link /user/login}
    */
   static async loginUser(params?: LoginUserQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<LoginUserQueryResponse, ResponseErrorConfig<LoginUser400>, unknown>({
       method: 'GET',
       url: `/user/login`,
@@ -86,7 +87,7 @@ export class User {
    * {@link /user/logout}
    */
   static async logoutUser(config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<LogoutUserQueryResponse, ResponseErrorConfig<Error>, unknown>({ method: 'GET', url: `/user/logout`, ...requestConfig })
     return res.data
   }
@@ -96,7 +97,7 @@ export class User {
    * {@link /user/:username}
    */
   static async getUserByName(username: GetUserByNamePathParams['username'], config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<GetUserByNameQueryResponse, ResponseErrorConfig<GetUserByName400 | GetUserByName404>, unknown>({
       method: 'GET',
       url: `/user/${username}`,
@@ -115,7 +116,7 @@ export class User {
     data?: UpdateUserMutationRequest,
     config: Partial<RequestConfig<UpdateUserMutationRequest>> & { client?: Client } = {},
   ) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const requestData = data
     const res = await request<UpdateUserMutationResponse, ResponseErrorConfig<Error>, UpdateUserMutationRequest>({
       method: 'PUT',
@@ -132,7 +133,7 @@ export class User {
    * {@link /user/:username}
    */
   static async deleteUser(username: DeleteUserPathParams['username'], config: Partial<RequestConfig> & { client?: Client } = {}) {
-    const { client: request = this.#client, ...requestConfig } = config
+    const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)
     const res = await request<DeleteUserMutationResponse, ResponseErrorConfig<DeleteUser400 | DeleteUser404>, unknown>({
       method: 'DELETE',
       url: `/user/${username}`,

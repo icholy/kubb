@@ -169,7 +169,7 @@ function generateMethod({
   const returnStatement = buildReturnStatement({ dataReturnType, parser, zodSchemas })
 
   const methodBody = [
-    'const { client: request = this.#client, ...requestConfig } = config',
+    'const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)',
     '',
     requestDataLine,
     formDataLine,
@@ -212,7 +212,7 @@ export function StaticClassClient({
     }),
   )
 
-  const classCode = `export class ${name} {\n  static #client: Client = fetch\n\n${methods.join('\n\n')}\n}`
+  const classCode = `export class ${name} {\n  static #client: Client = fetch\n  static #config: Partial<RequestConfig> = {}\n\n${methods.join('\n\n')}\n}`
 
   return (
     <File.Source name={name} isExportable={isExportable} isIndexable={isIndexable}>

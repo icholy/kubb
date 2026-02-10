@@ -173,7 +173,7 @@ function generateMethod({
   const returnStatement = buildReturnStatement({ dataReturnType, parser, zodSchemas })
 
   const methodBody = [
-    'const { client: request = this.#client, ...requestConfig } = config',
+    'const { client: request = this.#client, ...requestConfig } = mergeConfig(this.#config, config)',
     '',
     requestDataLine,
     formDataLine,
@@ -217,9 +217,12 @@ export function ClassClient({
 
   const classCode = `export class ${name} {
   #client: Client
+  #config: Partial<RequestConfig>
 
   constructor(config: Partial<RequestConfig> & { client?: Client } = {}) {
-    this.#client = config.client || fetch
+    const { client, ...requestConfig } = config
+    this.#client = client || fetch
+    this.#config = requestConfig
   }
 
 ${methods.join('\n\n')}
